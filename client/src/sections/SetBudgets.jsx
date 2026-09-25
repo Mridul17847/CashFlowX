@@ -1,0 +1,111 @@
+import React, { useState } from 'react';
+import BudgetCardDisplay from '../components/BudgetCardDisplay';
+import { useAppContext } from '../contexts/AppProvider';
+import toast from 'react-hot-toast';
+
+function SetBudgets() {
+  const { addBudget, budgets, getBudgets, expenseCategory, getBudgetUsage } = useAppContext();
+  const [category, setCategory] = useState('');
+  const [amount, setAmount] = useState('');
+  const [loading, setLoading] = useState(false); // <-- Loading state
+
+  const handleSubmit = async () => {
+    if (!category || !amount) {
+      toast.error('Please select a category and enter a budget.');
+      return;
+    }
+
+    if (Number(amount) <= 0) {
+      toast.error('Budget amount should be greater than 0.');
+      return;
+    }
+
+    setLoading(true); // start loading
+    try {
+      await addBudget({
+        category,
+        amount
+      });
+      await getBudgets();
+      await getBudgetUsage();
+      setCategory('');
+      setAmount('');
+    } catch {
+      return;
+    } finally {
+      setLoading(false); // stop loading no matter what
+    }
+  };
+
+  return (
+    <div className='w-full'>
+      <div className='rounded-xl bg-slate-900/50 backdrop-blur-md py-6 px-6 border border-slate-800'>
+        <h1 className='text-xl font-semibold mb-6 text-slate-200'>
+          <span className='text-blue-400'>+</span> Set Monthly Budget
+        </h1>
+
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-5'>
+          <div>
+            <label htmlFor='category' className='block text-sm font-medium text-slate-400 mb-2.5'>
+              Category
+            </label>
+            <select
+              id='category'
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              className='pl-3 py-2.5 bg-slate-800/50 text-slate-200 border border-slate-700 w-full rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
+              disabled={loading} // disable while loading
+            >
+              <option value='' className="bg-slate-800">Select category...</option>
+              {expenseCategory.map((item, index) => (
+                <option key={index} value={item} className="bg-slate-800">
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label htmlFor='budget' className='block text-sm font-medium text-slate-400 mb-2.5'>
+              Monthly Budget
+            </label>
+            <div className='relative'>
+              <span className='absolute left-3 top-1/2 -translate-y-1/2 text-slate-500'>Rs</span>
+              <input
+                id='budget'
+                type='number'
+                placeholder='0.00'
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className='pl-10 pr-3 py-2.5 bg-slate-800/50 text-slate-200 placeholder-slate-500 border border-slate-700 w-full rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all'
+                disabled={loading} // disable while loading
+              />
+            </div>
+          </div>
+
+          <div className='flex items-end'>
+            <button
+              onClick={handleSubmit}
+              className='w-full bg-blue-600 text-white font-semibold py-2.5 rounded-xl hover:bg-blue-500 transition-all shadow-[0_0_15px_rgba(37,99,235,0.3)] hover:shadow-[0_0_25px_rgba(37,99,235,0.5)] disabled:opacity-50 disabled:cursor-not-allowed'
+              disabled={loading} // disable button while loading
+            >
+              {loading ? 'Loading...' : '+ Set Budget'}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className='rounded-xl bg-slate-900/50 backdrop-blur-md py-6 px-6 border border-slate-800 mt-12'>
+        <h3 className='text-2xl font-semibold text-slate-200'>Monthly Budgets</h3>
+
+        <div className='flex flex-col gap-4 mt-6'>
+          {budgets.map((item, index) => (
+            <BudgetCardDisplay key={index} item={item} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default SetBudgets;
