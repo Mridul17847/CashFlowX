@@ -1,4 +1,4 @@
-# 💰 FinTrack — Personal Finance Manager
+# 💰 CashFlowX — Personal Finance Manager
 
 A modern, full-stack web application to help you take control of your finances. Track income and expenses, set monthly budgets, and gain insights through interactive charts and analytics — all in one place.
 

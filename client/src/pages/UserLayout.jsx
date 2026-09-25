@@ -67,7 +67,7 @@ export default function UserLayout() {
             onClick={() => navigate("/")}
             className="text-xl text-emerald-400 font-bold flex items-center gap-2 cursor-pointer"
           >
-            <img src="./logo.png" alt="" className="size-8 drop-shadow-md" /> FinTrack
+            <img src="./logo.png" alt="" className="size-8 drop-shadow-md" /> CashFlowX
           </span>
           <button
             ref={toggleRef}
