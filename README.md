@@ -15,12 +15,6 @@ A modern, user-friendly web application designed to help individuals manage thei
 
 ---
 
-## 🚀 Live Demo
-
-👉 [Live Preview](https://personal-finance-manager-nine.vercel.app)
-
----
-
 ## 📂 GitHub Repository
 
 📁 [GitHub Repo](https://github.com/ThilinaJayamal/Personal-Finance-Manager)
