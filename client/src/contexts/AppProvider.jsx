@@ -1,7 +1,13 @@
-import React, { createContext, useEffect, useContext, useState } from 'react';
+import React, { createContext, useEffect, useContext, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+
+// Returns 'dark' between 18:00–06:00, otherwise 'light'
+const getThemeByTime = () => {
+    const hour = new Date().getHours();
+    return (hour >= 18 || hour < 6) ? 'dark' : 'light';
+};
 
 const AppContext = createContext();
 
@@ -29,8 +35,13 @@ function AppProvider({ children }) {
     const [yearData, setYearData] = useState([]);
     const [budgetUsage, setBudgetUsage] = useState([]);
     const [transactions, setTransactions] = useState([]);
-
     const [expenseCategory, setExpenseCategory] = useState(defaultExpenseCategories);
+
+    // ── Theme: auto by time, overridable by user ──
+    const [theme, setTheme] = useState(() => {
+        // Use saved preference if exists, else time-based default
+        return localStorage.getItem('cfx-theme') || getThemeByTime();
+    });
 
     const navigate = useNavigate();
 
@@ -186,6 +197,32 @@ function AppProvider({ children }) {
         }
     };
 
+    // Apply theme class to <html> element
+    useEffect(() => {
+        const html = document.documentElement;
+        html.classList.remove('dark', 'light');
+        html.classList.add(theme);
+    }, [theme]);
+
+    // Toggle theme manually and persist choice
+    const toggleTheme = useCallback(() => {
+        setTheme(prev => {
+            const next = prev === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('cfx-theme', next);
+            return next;
+        });
+    }, []);
+
+    // Re-evaluate time-based theme every minute (if no manual override stored)
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!localStorage.getItem('cfx-theme')) {
+                setTheme(getThemeByTime());
+            }
+        }, 60_000);
+        return () => clearInterval(interval);
+    }, []);
+
     useEffect(() => {
         loadUser()
     }, []);
@@ -234,7 +271,9 @@ function AppProvider({ children }) {
                 getBudgetUsage,
                 transactions,
                 search,
-                setSearch
+                setSearch,
+                theme,
+                toggleTheme,
             }}
         >
             {children}

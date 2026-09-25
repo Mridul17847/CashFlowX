@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { useAppContext } from '../contexts/AppProvider';
+import { Sun, Moon } from 'lucide-react';
 
 function Login() {
   // Destructure login, register, and navigate functions from context
-  const { login, register, navigate } = useAppContext();
+  const { login, register, navigate, theme, toggleTheme } = useAppContext();
 
   // Track current form state: either 'login' or 'sign-up'
   const [state, setState] = useState('login');
@@ -44,12 +45,24 @@ function Login() {
   };
 
   return (
-    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 bg-slate-950 relative overflow-hidden'>
+    <div className='flex items-center justify-center min-h-screen px-6 sm:px-0 relative overflow-hidden' style={{backgroundColor: 'var(--bg-base)'}}>
       {/* Background glowing orbs */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-600/20 rounded-full blur-[100px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-600/20 rounded-full blur-[100px] pointer-events-none"></div>
+
+      {/* Theme toggle */}
+      <button
+        id="login-theme-toggle"
+        onClick={toggleTheme}
+        title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+        className="absolute top-4 right-4 p-2.5 rounded-xl theme-elevated theme-border border transition-all hover:scale-110 z-20"
+      >
+        {theme === 'dark'
+          ? <Sun size={18} className="text-amber-400" />
+          : <Moon size={18} className="text-indigo-500" />}
+      </button>
       
-      <div className='bg-slate-900/60 backdrop-blur-xl border border-slate-800 p-8 rounded-2xl shadow-2xl w-full sm:w-96 text-slate-200 relative z-10'>
+      <div className='theme-surface border theme-border backdrop-blur-xl p-8 rounded-2xl shadow-2xl w-full sm:w-96 theme-text relative z-10'>
 
         {/* Logo and Title */}
         <div className='border-b border-slate-700/50 px-2 py-6 mb-6'>

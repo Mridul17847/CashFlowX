@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  Menu, X, Home, History, BadgeDollarSign, Goal, UserCircle, SlidersVertical
+  Menu, X, Home, History, BadgeDollarSign, Goal, UserCircle, SlidersVertical, Sun, Moon
 } from "lucide-react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useAppContext } from "../contexts/AppProvider";
 import SkeletonLoader from "../components/SkeletonLoader";
 
 export default function UserLayout() {
-  const { setSearch, logout, navigate, user, loading } = useAppContext();
+  const { setSearch, logout, navigate, user, loading, theme, toggleTheme } = useAppContext();
   const location = useLocation();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -58,7 +58,8 @@ export default function UserLayout() {
       {/* Sidebar */}
       <aside
         ref={sidebarRef}
-        className={`fixed md:static z-40 top-0 left-0 h-full w-64 bg-slate-900/80 backdrop-blur-md border-r border-slate-800 
+        className={`fixed md:static z-40 top-0 left-0 h-full w-64 
+        border-r theme-surface theme-border
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? "translate-x-0" : "-translate-x-full"} md:translate-x-0`}
       >
@@ -98,7 +99,7 @@ export default function UserLayout() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col h-full">
         {/* Header */}
-        <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 px-4 py-4 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-30 theme-surface border-b theme-border px-4 py-4 flex items-center justify-between gap-4">
           <button
             ref={toggleRef}
             className="md:hidden text-slate-400 hover:text-slate-200"
@@ -121,23 +122,39 @@ export default function UserLayout() {
               />
             </div>
 
-            {/* User Dropdown */}
-            <div className="relative" ref={userDropdownRef}>
-              <button onClick={() => setShowUserDropdown(prev => !prev)} className="cursor-pointer">
-                <UserCircle size={30} className="text-slate-400 hover:text-slate-200 transition-colors" />
+            {/* Right-side controls */}
+            <div className="flex items-center gap-3">
+
+              {/* Theme Toggle */}
+              <button
+                id="theme-toggle-btn"
+                onClick={toggleTheme}
+                title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+                className="p-2 rounded-lg theme-elevated theme-border border transition-all hover:scale-110 theme-muted hover:theme-text"
+              >
+                {theme === 'dark'
+                  ? <Sun size={18} className="text-amber-400" />
+                  : <Moon size={18} className="text-indigo-500" />}
               </button>
 
-              {showUserDropdown && (
-                <div className="absolute right-0 mt-2 w-48 bg-slate-800 rounded-lg border border-slate-700 p-4 z-50 shadow-xl">
-                  <p className="text-sm font-semibold text-slate-200 mb-3 truncate">{user.email}</p>
-                  <button
-                    className="text-rose-400 hover:text-rose-300 cursor-pointer bg-slate-900 border w-full px-3 py-2 rounded-lg border-rose-500/50 hover:border-rose-400 hover:bg-rose-500/10 transition-all text-sm font-medium"
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
+              {/* User Dropdown */}
+              <div className="relative" ref={userDropdownRef}>
+                <button onClick={() => setShowUserDropdown(prev => !prev)} className="cursor-pointer">
+                  <UserCircle size={30} className="theme-muted hover:theme-text transition-colors" />
+                </button>
+
+                {showUserDropdown && (
+                  <div className="absolute right-0 mt-2 w-48 theme-elevated rounded-lg border theme-border p-4 z-50 shadow-xl">
+                    <p className="text-sm font-semibold theme-text mb-3 truncate">{user.email}</p>
+                    <button
+                      className="text-rose-400 hover:text-rose-300 cursor-pointer theme-surface border w-full px-3 py-2 rounded-lg border-rose-500/50 hover:border-rose-400 hover:bg-rose-500/10 transition-all text-sm font-medium"
+                      onClick={handleLogout}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </header>
